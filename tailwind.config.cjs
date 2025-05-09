@@ -3,17 +3,26 @@ const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ["class"],
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  darkMode: 'class',
   theme: {
     fontFamily: {
       satoshi: ['Satoshi', 'sans-serif'],
+      sans: ['Inter', 'sans-serif'],
+      heading: ['Montserrat', 'sans-serif'],
     },
     screens: {
       '2xsm': '375px',
       xsm: '425px',
       '3xl': '2000px',
       ...defaultTheme.screens,
+    },
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px'
+      }
     },
     extend: {
       colors: {
@@ -24,6 +33,61 @@ module.exports = {
           ...colors.black,
           DEFAULT: '#1C2434',
           2: '#010101',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))'
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))'
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))'
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))'
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))'
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))'
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))'
+        },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))'
+        },
+        billbook: {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
         },
         red: {
           ...colors.red,
@@ -65,6 +129,56 @@ module.exports = {
         success: '#219653',
         danger: '#D34053',
         warning: '#FFA70B',
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
+      },
+      keyframes: {
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' }
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' }
+        },
+        'fade-in': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(10px)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          }
+        },
+        'fade-out': {
+          '0%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'translateY(10px)'
+          }
+        },
+        rotating: {
+          '0%, 100%': { transform: 'rotate(360deg)' },
+          '50%': { transform: 'rotate(0deg)' },
+        },
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in': 'fade-in 0.3s ease-out',
+        'fade-out': 'fade-out 0.3s ease-out',
+        'ping-once': 'ping 5s cubic-bezier(0, 0, 0.2, 1)',
+        rotating: 'rotating 30s linear infinite',
+        'spin-1.5': 'spin 1.5s linear infinite',
+        'spin-2': 'spin 2s linear infinite',
+        'spin-3': 'spin 3s linear infinite',
       },
       fontSize: {
         'title-xxl': ['44px', '55px'],
@@ -225,7 +339,10 @@ module.exports = {
       content: {
         'icon-copy': 'url("../images/icon/icon-copy-alt.svg")',
       },
-      transitionProperty: { width: 'width', stroke: 'stroke' },
+      transitionProperty: { 
+        width: 'width', 
+        stroke: 'stroke' 
+      },
       borderWidth: {
         6: '6px',
       },
@@ -249,20 +366,8 @@ module.exports = {
         1: '0px 1px 0px #E2E8F0',
         2: '0px 1px 4px rgba(0, 0, 0, 0.12)',
       },
-      keyframes: {
-        rotating: {
-          '0%, 100%': { transform: 'rotate(360deg)' },
-          '50%': { transform: 'rotate(0deg)' },
-        },
-      },
-      animation: {
-        'ping-once': 'ping 5s cubic-bezier(0, 0, 0.2, 1)',
-        rotating: 'rotating 30s linear infinite',
-        'spin-1.5': 'spin 1.5s linear infinite',
-        'spin-2': 'spin 2s linear infinite',
-        'spin-3': 'spin 3s linear infinite',
-      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
+

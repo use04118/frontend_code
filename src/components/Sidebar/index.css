@@ -1,0 +1,17 @@
+/* Custom Scrollbar for Sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .sidebar::-webkit-scrollbar-track {
+    background: #333;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 10px;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }

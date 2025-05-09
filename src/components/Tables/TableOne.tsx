@@ -1,121 +1,92 @@
-import { BRAND } from '../../types/brand';
-import BrandOne from '../../images/brand/brand-01.svg';
-import BrandTwo from '../../images/brand/brand-02.svg';
-import BrandThree from '../../images/brand/brand-03.svg';
-import BrandFour from '../../images/brand/brand-04.svg';
-import BrandFive from '../../images/brand/brand-05.svg';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const brandData: BRAND[] = [
-  {
-    logo: BrandOne,
-    name: 'Google',
-    visitors: 3.5,
-    revenues: '5,768',
-    sales: 590,
-    conversion: 4.8,
-  },
-  {
-    logo: BrandTwo,
-    name: 'Twitter',
-    visitors: 2.2,
-    revenues: '4,635',
-    sales: 467,
-    conversion: 4.3,
-  },
-  {
-    logo: BrandThree,
-    name: 'Github',
-    visitors: 2.1,
-    revenues: '4,290',
-    sales: 420,
-    conversion: 3.7,
-  },
-  {
-    logo: BrandFour,
-    name: 'Vimeo',
-    visitors: 1.5,
-    revenues: '3,580',
-    sales: 389,
-    conversion: 2.5,
-  },
-  {
-    logo: BrandFive,
-    name: 'Facebook',
-    visitors: 3.5,
-    revenues: '6,768',
-    sales: 390,
-    conversion: 4.2,
-  },
+interface Party {
+  id: number;
+  name: string;
+  total_sales: number;
+  total_revenue: number;
+  total_purchases: number;
+  total_purchase_amount: number;
+}
+
+const periodOptions = [
+  { label: 'Weekly', value: 'weekly' },
+  { label: 'Monthly', value: 'monthly' },
+  { label: 'Yearly', value: 'yearly' },
 ];
 
 const TableOne = () => {
+  const [period, setPeriod] = useState('monthly');
+  const [parties, setParties] = useState<Party[]>([]);
+
+  useEffect(() => {
+    const fetchParties = async () => {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const token = localStorage.getItem('accessToken');
+      const response = await axios.get(`${API_URL}/dashboard/top-parties-combined/?period=${period}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setParties(response.data.parties);
+    };
+    fetchParties();
+  }, [period]);
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-        Top Channels
-      </h4>
-
+      <div className="flex justify-between items-center mb-6">
+        <h4 className="text-xl font-semibold text-black dark:text-white">
+          Top 5 Parties Overview
+        </h4>
+        <select
+          value={period}
+          onChange={e => setPeriod(e.target.value)}
+          className="py-1 pl-3 pr-8 text-sm font-medium outline-none border rounded"
+        >
+          {periodOptions.map(opt => (
+            <option key={opt.value} value={opt.value} className="dark:bg-boxdark">
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="flex flex-col">
-        <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
+        <div className="grid grid-cols-5 rounded-sm bg-gray-2 dark:bg-meta-4">
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Source
-            </h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">Party Name</h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Visitors
-            </h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">Sales</h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Revenues
-            </h5>
+            <h5 className="text-sm font-medium uppercase xsm:text-base">Sales Revenue</h5>
           </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Sales
-            </h5>
+          <div className="p-2.5 text-center xl:p-5">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">Purchases</h5>
           </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Conversion
-            </h5>
+          <div className="p-2.5 text-center xl:p-5">
+            <h5 className="text-sm font-medium uppercase xsm:text-base">Purchase Amount</h5>
           </div>
         </div>
-
-        {brandData.map((brand, key) => (
+        {parties.map((party) => (
           <div
-            className={`grid grid-cols-3 sm:grid-cols-5 ${
-              key === brandData.length - 1
-                ? ''
-                : 'border-b border-stroke dark:border-strokedark'
-            }`}
-            key={key}
+            className="grid grid-cols-5 border-b border-stroke dark:border-strokedark"
+            key={party.id}
           >
             <div className="flex items-center gap-3 p-2.5 xl:p-5">
-              <div className="flex-shrink-0">
-                <img src={brand.logo} alt="Brand" />
-              </div>
-              <p className="hidden text-black dark:text-white sm:block">
-                {brand.name}
-              </p>
+              <p className="text-black dark:text-white">{party.name}</p>
             </div>
-
             <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-black dark:text-white">{brand.visitors}K</p>
+              <p className="text-meta-3">{party.total_sales}</p>
             </div>
-
             <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-meta-3">${brand.revenues}</p>
+              <p className="text-meta-3">{party.total_revenue}</p>
             </div>
-
-            <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-black dark:text-white">{brand.sales}</p>
+            <div className="flex items-center justify-center p-2.5 xl:p-5">
+              <p className="text-meta-3">{party.total_purchases}</p>
             </div>
-
-            <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-meta-5">{brand.conversion}%</p>
+            <div className="flex items-center justify-center p-2.5 xl:p-5">
+              <p className="text-meta-3">{party.total_purchase_amount}</p>
             </div>
           </div>
         ))}

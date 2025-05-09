@@ -1,6 +1,7 @@
 import { ApexOptions } from 'apexcharts';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
+import axios from 'axios';
 
 const options: ApexOptions = {
   colors: ['#3C50E0', '#80CAEE'],
@@ -69,33 +70,67 @@ interface ChartTwoState {
   }[];
 }
 
+const getWeekRange = (offset = 0) => {
+  
+  const now = new Date();
+  const first = now.getDate() - now.getDay() + 1 + offset * 7; // Monday as first day
+  const last = first + 6;
+  const start = new Date(now.setDate(first));
+  const end = new Date(now.setDate(last));
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+  };
+};
+
 const ChartTwo: React.FC = () => {
   const [state, setState] = useState<ChartTwoState>({
     series: [
-      {
-        name: 'Sales',
-        data: [44, 55, 41, 67, 22, 43, 65],
-      },
-      {
-        name: 'Revenue',
-        data: [13, 23, 20, 8, 13, 27, 15],
-      },
+      { name: 'Profit', data: [0, 0, 0, 0, 0, 0, 0] },
     ],
   });
-  
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-    }));
-  };
-  handleReset;  
+  const [selectedWeek, setSelectedWeek] = useState('this');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { start, end } = getWeekRange(selectedWeek === 'last' ? -1 : 0);
+        const API_URL = import.meta.env.VITE_API_URL;
+        const token = localStorage.getItem('accessToken');
+        if (!token) throw new Error('Token not found');
+
+        const response = await axios.get(
+          `${API_URL}/dashboard/profit/`,
+          {
+            params: { start_date: start, end_date: end },
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+        const data = response.data;
+
+        setState({
+          series: [
+            { name: 'Profit', data: [Number(data.gross_profit) || 0] }
+          ]
+        });
+      } catch (error) {
+        setState({
+          series: [
+            { name: 'Profit', data: [0, 0, 0, 0, 0, 0, 0] }
+          ]
+        });
+      }
+    };
+
+    fetchData();
+  }, [selectedWeek]);
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
       <div className="mb-4 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-xl font-semibold text-black dark:text-white">
-            Profit this week
+            Profit {selectedWeek === 'this' ? 'this week' : 'last week'}
           </h4>
         </div>
         <div>
@@ -104,9 +139,11 @@ const ChartTwo: React.FC = () => {
               name="#"
               id="#"
               className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
+              onChange={(e) => setSelectedWeek(e.target.value)}
+              value={selectedWeek}
             >
-              <option value="" className='dark:bg-boxdark'>This Week</option>
-              <option value="" className='dark:bg-boxdark'>Last Week</option>
+              <option value="this" className='dark:bg-boxdark'>This Week</option>
+              <option value="last" className='dark:bg-boxdark'>Last Week</option>
             </select>
             <span className="absolute top-1/2 right-3 z-10 -translate-y-1/2">
               <svg
